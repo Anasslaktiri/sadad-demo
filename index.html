@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SADAD — Banque professionnelle 100% en ligne</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bone:    #F4F1EA;
+      --bone-2:  #ECE7DB;
+      --paper:   #FBFAF6;
+      --paper-2: #FFFFFF;
+
+      --ink:     #1C1A17;
+      --ink-2:   #3A352E;
+      --muted:   #8A8275;
+      --faint:   #B5AD9E;
+
+      --plum:    #2E1A47;
+      --plum-2:  #3F2766;
+      --plum-3:  #57399E;
+
+      --saffron: #E8A317;
+      --terra:   #C75B39;
+      --teal:    #1F6F6B;
+      --olive:   #6B7A3A;
+
+      --line:    #DED7C8;
+      --line-2:  #E8E2D5;
+
+      --pos:     #2F7D55;
+      --neg:     #B5402A;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: var(--bone);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+    /* headings reuse Poppins now — kept as a class so existing markup needs no edits */
+    .serif { font-family: 'Poppins', sans-serif; letter-spacing: -0.02em; }
+    .mono  { font-family: 'Geist Mono', monospace; }
+
+    ::-webkit-scrollbar { width: 8px; height: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CFC7B6; border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: #BBB19C; }
+
+    .zellige {
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.05' stroke-width='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z'/%3E%3Cpath d='M30 15L45 30L30 45L15 30Z'/%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3C/g%3E%3C/svg%3E");
+    }
+    .grain::after {
+      content: ''; position: absolute; inset: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+      opacity: 0.025; mix-blend-mode: overlay;
+    }
+
+    .sidebar {
+      width: 248px; min-height: 100vh;
+      position: fixed; left: 0; top: 0; bottom: 0; z-index: 200;
+      background: var(--plum);
+      border-right: 1px solid rgba(0,0,0,0.2);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .sidebar-glow {
+      position: absolute; bottom: -120px; left: -60px;
+      width: 280px; height: 280px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(232,163,23,0.18), transparent 70%);
+      pointer-events: none;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: 13px;
+      padding: 11px 16px; margin: 1px 14px; border-radius: 11px;
+      font-size: 14px; font-weight: 500; letter-spacing: 0.005em;
+      color: rgba(255,255,255,0.55); cursor: pointer;
+      position: relative; z-index: 1;
+      transition: color .2s, background .2s;
+    }
+    .nav-item:hover { color: rgba(255,255,255,0.92); background: rgba(255,255,255,0.05); }
+    .nav-item.active { color: #fff; background: rgba(255,255,255,0.08); }
+    .nav-item.active::before {
+      content: ''; position: absolute; left: -14px; top: 50%; transform: translateY(-50%);
+      width: 4px; height: 22px; border-radius: 0 4px 4px 0; background: var(--saffron);
+    }
+    .nav-ico { width: 19px; height: 19px; flex-shrink: 0; opacity: .9; }
+
+    .bank-card {
+      border-radius: 22px; position: relative; overflow: hidden; color: #F4EFE4;
+      background:
+        radial-gradient(120% 120% at 85% 10%, rgba(232,163,23,0.22), transparent 45%),
+        linear-gradient(150deg, #241338 0%, #2E1A47 45%, #3F2766 100%);
+      box-shadow: 0 30px 60px -20px rgba(46,26,71,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    .card-ring {
+      position: absolute; border-radius: 50%; border: 1px solid rgba(255,255,255,0.06);
+      pointer-events: none;
+    }
+    .emv {
+      width: 44px; height: 34px; border-radius: 6px; position: relative; overflow: hidden;
+      background: linear-gradient(135deg, #B8881A 0%, #F4D77A 45%, #A8770F 100%);
+    }
+    .emv::before { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background: rgba(0,0,0,.22); }
+    .emv::after  { content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; background: rgba(0,0,0,.22); }
+
+    .panel {
+      background: var(--paper); border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.6) inset, 0 2px 14px -8px rgba(46,26,71,0.12);
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      font-family: 'Poppins'; font-size: 14px; font-weight: 700; letter-spacing: 0.01em;
+      padding: 12px 22px; border-radius: 12px; border: none; cursor: pointer;
+      transition: transform .12s, box-shadow .2s, background .2s, color .2s;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn-plum  { background: var(--plum); color: #F4EFE4; box-shadow: 0 8px 20px -8px rgba(46,26,71,0.6); }
+    .btn-plum:hover { background: var(--plum-2); }
+    .btn-saffron { background: var(--saffron); color: #2A1A05; box-shadow: 0 8px 20px -8px rgba(232,163,23,0.6); }
+    .btn-saffron:hover { background: #F0B12E; }
+    .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
+    .btn-ghost:hover { background: var(--bone-2); border-color: var(--faint); }
+
+    .field {
+      width: 100%; padding: 13px 16px; font-family: 'Poppins'; font-size: 14.5px;
+      color: var(--ink); background: var(--paper-2);
+      border: 1.5px solid var(--line); border-radius: 12px; outline: none;
+      transition: border-color .18s, box-shadow .18s;
+    }
+    .field::placeholder { color: var(--faint); }
+    .field:focus { border-color: var(--plum-3); box-shadow: 0 0 0 4px rgba(87,57,158,0.1); }
+    .label { display:block; font-size: 12.5px; font-weight: 700; color: var(--ink-2); margin-bottom: 8px; letter-spacing: .02em; }
+
+    .tg { width: 46px; height: 26px; border-radius: 14px; background: #D6CEBE; position: relative; cursor: pointer; transition: background .26s; flex-shrink: 0; }
+    .tg.on { background: var(--teal); }
+    .tg-k { width: 20px; height: 20px; border-radius: 50%; background: #fff; position: absolute; top: 3px; left: 3px; transition: transform .26s cubic-bezier(.4,0,.2,1); box-shadow: 0 2px 5px rgba(0,0,0,.25); }
+    .tg.on .tg-k { transform: translateX(20px); }
+
+    input[type=range] { -webkit-appearance:none; width:100%; height:6px; border-radius:6px; background: var(--line); outline:none; cursor:pointer; }
+    input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:22px; height:22px; border-radius:50%; background: var(--plum); border:3px solid var(--paper); cursor:pointer; box-shadow:0 2px 8px rgba(46,26,71,.4); }
+
+    .badge { display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:20px; font-size:12px; font-weight:700; letter-spacing:.01em; }
+    .badge::before { content:''; width:6px; height:6px; border-radius:50%; }
+    .b-pos { background: rgba(47,125,85,.12); color: var(--pos); } .b-pos::before { background: var(--pos); }
+    .b-wait{ background: rgba(232,163,23,.15); color: #9A6A05; } .b-wait::before { background: var(--saffron); }
+    .b-neg { background: rgba(181,64,42,.12); color: var(--neg); } .b-neg::before { background: var(--neg); }
+
+    @keyframes rise { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform:none; } }
+    @keyframes slideIn { from { opacity:0; transform: translateX(40px) scale(.96); } to { opacity:1; transform:none; } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes ping { 0%,100%{ opacity:1 } 50%{ opacity:.35 } }
+    @keyframes scanline { 0%{ top:14px } 50%{ top:44px } 100%{ top:14px } }
+    .rise { animation: rise .4s cubic-bezier(.2,.7,.3,1) both; }
+    .stagger > * { animation: rise .5s cubic-bezier(.2,.7,.3,1) both; }
+    .stagger > *:nth-child(1){animation-delay:.04s} .stagger > *:nth-child(2){animation-delay:.1s}
+    .stagger > *:nth-child(3){animation-delay:.16s} .stagger > *:nth-child(4){animation-delay:.22s}
+    .stagger > *:nth-child(5){animation-delay:.28s} .stagger > *:nth-child(6){animation-delay:.34s}
+    .toast-in { animation: slideIn .36s cubic-bezier(.22,1,.36,1) both; }
+
+    .row-hover { transition: background .15s; }
+    .row-hover:hover { background: var(--bone) !important; }
+    .live { width:7px;height:7px;border-radius:50%;background:#54C98A;display:inline-block;animation:ping 1.8s ease-in-out infinite; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useCallback } = React;
+
+const stroke = { fill:'none', stroke:'currentColor', strokeWidth:1.8, strokeLinecap:'round', strokeLinejoin:'round' };
+const I = {
+  grid: (s=19)=><svg className="nav-ico" width={s} height={s} viewBox="0 0 24 24" {...stroke}><rect x="3" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="3" width="7.5" height="7.5" rx="1.5"/><rect x="13.5" y="13.5" width="7.5" height="7.5" rx="1.5"/><rect x="3" y="13.5" width="7.5" height="7.5" rx="1.5"/></svg>,
+  transfer:(s=19)=><svg className="nav-ico" width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M7 17V5m0 0L3.5 8.5M7 5l3.5 3.5"/><path d="M17 7v12m0 0 3.5-3.5M17 19l-3.5-3.5"/></svg>,
+  card:(s=19)=><svg className="nav-ico" width={s} height={s} viewBox="0 0 24 24" {...stroke}><rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/></svg>,
+  file:(s=19)=><svg className="nav-ico" width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M14 2.5H6.5A2 2 0 0 0 4.5 4.5v15a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V8z"/><path d="M14 2.5V8h5.5"/><path d="M8.5 13.5h7M8.5 17h7"/></svg>,
+  star:(s=19)=><svg className="nav-ico" width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M12 3l2.6 5.3 5.9.86-4.25 4.14 1 5.86L12 16.5 6.75 19.16l1-5.86L3.5 9.16l5.9-.86z"/></svg>,
+  bell:(s=18)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M18 8.5A6 6 0 0 0 6 8.5c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>,
+  search:(s=16)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><circle cx="11" cy="11" r="7.5"/><path d="M21 21l-4.3-4.3"/></svg>,
+  settings:(s=17)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 0 1-4 0v-.1A1.6 1.6 0 0 0 9 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H3a2 2 0 0 1 0-4h.1A1.6 1.6 0 0 0 4.6 9a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.6 1.6 0 0 0 9 4.6a1.6 1.6 0 0 0 1-1.5V3a2 2 0 0 1 4 0v.1A1.6 1.6 0 0 0 19 4.6a1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8z"/></svg>,
+  check:(s=15)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke} strokeWidth="2.5"><path d="M20 6 9 17l-5-5"/></svg>,
+  plus:(s=17)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke} strokeWidth="2.2"><path d="M12 5v14M5 12h14"/></svg>,
+  up:(s=14)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke} strokeWidth="2.4"><path d="M12 19V5M5 12l7-7 7 7"/></svg>,
+  down:(s=14)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke} strokeWidth="2.4"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>,
+  eye:(s=16)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="2.8"/></svg>,
+  eyeOff:(s=16)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M9.9 4.2A9 9 0 0 1 12 4c6.5 0 10 7 10 7a17 17 0 0 1-2.1 3M6.6 6.6A17 17 0 0 0 2 11s3.5 7 10 7a9 9 0 0 0 3.4-.6M14 14.2a3 3 0 1 1-4.2-4.2"/><path d="M2 2l20 20"/></svg>,
+  zap:(s=14)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke} strokeWidth="2"><path d="M13 2 4 13h7l-1 9 9-11h-7z"/></svg>,
+  dl:(s=15)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>,
+  copy:(s=15)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><rect x="9" y="9" width="12" height="12" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>,
+  send:(s=16)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>,
+  x:(s=14)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke} strokeWidth="2.4"><path d="M18 6 6 18M6 6l12 12"/></svg>,
+  chevR:(s=15)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke} strokeWidth="2.2"><path d="M9 6l6 6-6 6"/></svg>,
+  scan:(s=19)=><svg className="nav-ico" width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><path d="M3 12h18"/></svg>,
+  upload:(s=22)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>,
+  cam:(s=18)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>,
+  spark:(s=15)=><svg width={s} height={s} viewBox="0 0 24 24" {...stroke}><path d="M12 3v3M12 18v3M5.6 5.6l2.1 2.1M16.3 16.3l2.1 2.1M3 12h3M18 12h3M5.6 18.4l2.1-2.1M16.3 7.7l2.1-2.1"/></svg>,
+};
+
+const fmtMAD = (n) => {
+  const abs = Math.abs(n);
+  const int = Math.floor(abs).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  const dec = (abs % 1 === 0) ? '00' : Math.round((abs % 1) * 100).toString().padStart(2,'0');
+  return `${int},${dec}`;
+};
+
+const Toggle = ({on,onChange}) => (
+  <div className={`tg ${on?'on':''}`} onClick={()=>onChange(!on)}><div className="tg-k"/></div>
+);
+
+const BankCard = ({ width=400 }) => {
+  const [show,setShow] = useState(true);
+  const h = Math.round(width*0.6);
+  const big = width > 340;
+  return (
+    <div className="bank-card zellige grain" style={{ width, height:h }}>
+      <div className="card-ring" style={{ width:200,height:200,top:-70,right:-50 }}/>
+      <div className="card-ring" style={{ width:140,height:140,top:-30,right:-10 }}/>
+      <div className="card-ring" style={{ width:260,height:260,bottom:-120,left:-70 }}/>
+      <div style={{ position:'relative', zIndex:2, height:'100%', padding: big?'24px 28px':'18px 20px', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
+          <div>
+            <div className="serif" style={{ fontWeight:900, fontSize: big?27:21, letterSpacing:'-.5px', lineHeight:1 }}>SADAD</div>
+            <div style={{ fontSize:8.5, letterSpacing:3, textTransform:'uppercase', color:'rgba(244,239,228,.5)', marginTop:5 }}>Carte Professionnelle</div>
+          </div>
+          <div className="emv"/>
+        </div>
+        <div>
+          <div style={{ fontSize:9.5, letterSpacing:2, textTransform:'uppercase', color:'rgba(244,239,228,.5)', marginBottom:6 }}>Solde disponible</div>
+          <div style={{ display:'flex', alignItems:'baseline', gap:9 }}>
+            <span className="serif" style={{ fontSize: big?30:22, fontWeight:600, letterSpacing:'-.5px' }}>{show ? fmtMAD(48350) : '•• •••'}</span>
+            <span style={{ fontSize:13, fontWeight:600, color:'rgba(244,239,228,.65)' }}>MAD</span>
+            <button onClick={()=>setShow(s=>!s)} style={{ background:'none', border:'none', color:'rgba(244,239,228,.55)', cursor:'pointer', display:'flex', padding:0, marginLeft:2 }}>{show?I.eyeOff():I.eye()}</button>
+          </div>
+        </div>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-end' }}>
+          <div>
+            <div className="mono" style={{ fontSize:13, letterSpacing:2.5, color:'rgba(244,239,228,.78)', marginBottom:8 }}>•••• •••• •••• 4829</div>
+            <div style={{ fontSize:8.5, letterSpacing:1.5, color:'rgba(244,239,228,.45)' }}>TITULAIRE</div>
+            <div style={{ fontSize:12.5, fontWeight:700, letterSpacing:.8 }}>YOUSSEF ALAMI</div>
+          </div>
+          <div style={{ textAlign:'right' }}>
+            <div style={{ display:'flex', justifyContent:'flex-end', marginBottom:3 }}>
+              <div style={{ width:26, height:26, borderRadius:'50%', background:'rgba(232,163,23,.85)', marginRight:-9 }}/>
+              <div style={{ width:26, height:26, borderRadius:'50%', background:'rgba(199,91,57,.8)' }}/>
+            </div>
+            <div style={{ fontSize:7, letterSpacing:1.5, color:'rgba(244,239,228,.4)' }}>mastercard</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Toasts = ({toasts, dismiss}) => (
+  <div style={{ position:'fixed', top:22, right:22, zIndex:9999, display:'flex', flexDirection:'column', gap:11 }}>
+    {toasts.map(t=>(
+      <div key={t.id} className="toast-in" style={{
+        display:'flex', alignItems:'center', gap:12, minWidth:300, maxWidth:380,
+        padding:'14px 16px', borderRadius:14,
+        background: t.type==='error' ? '#3A201A' : 'var(--plum)',
+        color:'#F4EFE4', boxShadow:'0 18px 40px -12px rgba(28,16,40,.5)', border:'1px solid rgba(255,255,255,.08)'
+      }}>
+        <div style={{ width:26, height:26, borderRadius:'50%', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
+          background: t.type==='error' ? 'rgba(199,91,57,.3)' : 'rgba(232,163,23,.25)', color: t.type==='error' ? '#E89478' : 'var(--saffron)' }}>
+          {t.type==='error'?I.x(13):I.check(14)}
+        </div>
+        <span style={{ flex:1, fontSize:13.5, fontWeight:500, lineHeight:1.35 }}>{t.message}</span>
+        <button onClick={()=>dismiss(t.id)} style={{ background:'none', border:'none', color:'rgba(244,239,228,.5)', cursor:'pointer', display:'flex', padding:2 }}>{I.x(12)}</button>
+      </div>
+    ))}
+  </div>
+);
+
+const NAV = [
+  { id:'dashboard',   label:'Tableau de bord', icon:'grid' },
+  { id:'virements',   label:'Virements',        icon:'transfer' },
+  { id:'carte',       label:'Carte SADAD',      icon:'card' },
+  { id:'facturation', label:'Facturation',      icon:'file' },
+  { id:'scanner',     label:'Scanner',          icon:'scan', badge:'IA' },
+  { id:'pro',         label:'SADAD Pro',        icon:'star', badge:'NEW' },
+];
+
+const Sidebar = ({active, setActive}) => (
+  <div className="sidebar">
+    <div className="sidebar-glow"/>
+    <div style={{ padding:'30px 24px 22px', position:'relative', zIndex:1 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:11 }}>
+        <div style={{ width:38, height:38, borderRadius:11, background:'linear-gradient(140deg,var(--saffron),var(--terra))', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 6px 16px -6px rgba(232,163,23,.7)' }}>
+          <span className="serif" style={{ color:'#2A1505', fontWeight:900, fontSize:20 }}>S</span>
+        </div>
+        <div>
+          <div className="serif" style={{ color:'#F4EFE4', fontWeight:700, fontSize:21, letterSpacing:'-.5px', lineHeight:1 }}>SADAD</div>
+          <div style={{ fontSize:8.5, color:'rgba(244,239,228,.42)', letterSpacing:2, textTransform:'uppercase', marginTop:3 }}>by LegalPlus.ma</div>
+        </div>
+      </div>
+    </div>
+    <div style={{ height:1, background:'rgba(255,255,255,.07)', margin:'0 24px 14px' }}/>
+    <div style={{ fontSize:10, letterSpacing:2, textTransform:'uppercase', color:'rgba(244,239,228,.32)', padding:'0 28px 8px', fontWeight:700, position:'relative', zIndex:1 }}>Navigation</div>
+    <nav style={{ flex:1, position:'relative', zIndex:1 }}>
+      {NAV.map(n=>(
+        <div key={n.id} className={`nav-item ${active===n.id?'active':''}`} onClick={()=>setActive(n.id)}>
+          {I[n.icon]()}
+          <span style={{ flex:1 }}>{n.label}</span>
+          {n.badge && <span style={{ fontSize:9, fontWeight:800, letterSpacing:.5, background:'var(--saffron)', color:'#2A1505', padding:'2px 7px', borderRadius:6 }}>{n.badge}</span>}
+        </div>
+      ))}
+    </nav>
+    <div style={{ margin:'14px', padding:'16px', borderRadius:14, background:'rgba(255,255,255,.05)', border:'1px solid rgba(255,255,255,.08)', position:'relative', zIndex:1 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:11 }}>
+        <div style={{ width:38, height:38, borderRadius:'50%', background:'linear-gradient(135deg,var(--terra),var(--saffron))', display:'flex', alignItems:'center', justifyContent:'center', color:'#2A1505', fontWeight:800, fontSize:14, flexShrink:0 }}>YA</div>
+        <div style={{ flex:1, minWidth:0 }}>
+          <div style={{ color:'#F4EFE4', fontSize:13.5, fontWeight:700, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>Youssef Alami</div>
+          <div style={{ fontSize:11, color:'rgba(244,239,228,.45)', marginTop:1 }}><span className="live" style={{ marginRight:5 }}/>Plan Gratuit</div>
+        </div>
+        <button style={{ background:'none', border:'none', color:'rgba(244,239,228,.4)', cursor:'pointer', display:'flex', padding:3 }}>{I.settings()}</button>
+      </div>
+    </div>
+  </div>
+);
+
+const Topbar = ({ crumb }) => (
+  <div style={{ padding:'18px 36px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:18, flexShrink:0, borderBottom:'1px solid var(--line)', background:'rgba(251,250,246,.7)', backdropFilter:'blur(8px)' }}>
+    <div style={{ fontSize:13, color:'var(--muted)', display:'flex', alignItems:'center', gap:8 }}>
+      <span style={{ fontWeight:600 }}>SADAD</span>{I.chevR(13)}<span style={{ color:'var(--ink)', fontWeight:700 }}>{crumb}</span>
+    </div>
+    <div style={{ display:'flex', alignItems:'center', gap:11 }}>
+      <div style={{ display:'flex', alignItems:'center', gap:9, padding:'9px 15px', background:'var(--paper-2)', border:'1px solid var(--line)', borderRadius:11, color:'var(--muted)' }}>
+        {I.search()}<input placeholder="Rechercher une transaction…" style={{ border:'none', background:'transparent', outline:'none', fontFamily:'Poppins', fontSize:13, color:'var(--ink)', width:180 }}/>
+      </div>
+      <div style={{ position:'relative' }}>
+        <button style={{ width:40, height:40, borderRadius:11, background:'var(--paper-2)', border:'1px solid var(--line)', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--ink-2)', cursor:'pointer' }}>{I.bell()}</button>
+        <div style={{ position:'absolute', top:8, right:8, width:8, height:8, borderRadius:'50%', background:'var(--terra)', border:'2px solid var(--paper)' }}/>
+      </div>
+    </div>
+  </div>
+);
+
+const Eyebrow = ({children}) => <div style={{ fontSize:11, fontWeight:800, letterSpacing:2.5, textTransform:'uppercase', color:'var(--terra)', marginBottom:7 }}>{children}</div>;
+
+const TX = [
+  { id:1, v:'Maroc Telecom',       cat:'Téléphonie',     date:'10 juin', amt:-1299,  ico:'📡', clr:'#57399E' },
+  { id:2, v:'Total Maroc',         cat:'Carburant',      date:'08 juin', amt:-450,   ico:'⛽', clr:'#C75B39' },
+  { id:3, v:'Loyer bureau',        cat:'Immobilier',     date:'05 juin', amt:-8500,  ico:'🏛️', clr:'#E8A317' },
+  { id:4, v:'Client ACME SARL',    cat:'Virement reçu',  date:'03 juin', amt:15000,  ico:'💼', clr:'#1F6F6B' },
+  { id:5, v:'Amazon Web Services', cat:'Cloud & Tech',   date:'01 juin', amt:-320,   ico:'☁️', clr:'#6B7A3A' },
+  { id:6, v:'Carrefour Market',    cat:'Fournitures',    date:'28 mai',  amt:-892.5, ico:'🛒', clr:'#2E1A47' },
+];
+
+const Kpi = ({ label, value, unit, pct, sub, accent, ico }) => (
+  <div className="panel" style={{ padding:'20px 22px' }}>
+    <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:16 }}>
+      <span style={{ fontSize:12.5, color:'var(--muted)', fontWeight:600 }}>{label}</span>
+      <div style={{ width:34, height:34, borderRadius:10, display:'flex', alignItems:'center', justifyContent:'center', background:accent+'18', color:accent }}>{ico}</div>
+    </div>
+    <div style={{ display:'flex', alignItems:'baseline', gap:5 }}>
+      <span className="serif" style={{ fontSize:25, fontWeight:600, letterSpacing:'-.5px', color:'var(--ink)' }}>{value}</span>
+      {unit && <span style={{ fontSize:12.5, fontWeight:600, color:'var(--muted)' }}>{unit}</span>}
+    </div>
+    <div style={{ marginTop:9, display:'flex', alignItems:'center', gap:6 }}>
+      <span style={{ display:'inline-flex', alignItems:'center', gap:3, fontSize:11.5, fontWeight:800, padding:'2px 8px', borderRadius:8, background: pct>0?'rgba(47,125,85,.12)':pct<0?'rgba(181,64,42,.12)':'var(--bone-2)', color: pct>0?'var(--pos)':pct<0?'var(--neg)':'var(--muted)' }}>
+        {pct>0?I.up(11):pct<0?I.down(11):null}{pct!==0?Math.abs(pct)+'%':'—'}
+      </span>
+      <span style={{ fontSize:11.5, color:'var(--faint)' }}>{sub}</span>
+    </div>
+  </div>
+);
+
+/* ━━━━━━━━━━ CASH-FLOW CHART ━━━━━━━━━━ */
+const FLOW = [
+  { m:'Jan', rev:42000, dep:28000 },
+  { m:'Fév', rev:38500, dep:31000 },
+  { m:'Mar', rev:51000, dep:26500 },
+  { m:'Avr', rev:47000, dep:34000 },
+  { m:'Mai', rev:58000, dep:30500 },
+  { m:'Juin',rev:65200, dep:12450 },
+];
+
+const CashflowChart = () => {
+  const [hover,setHover] = useState(null);
+  const W = 760, H = 220, pad = { t:16, r:16, b:30, l:48 };
+  const iw = W - pad.l - pad.r, ih = H - pad.t - pad.b;
+  const max = 70000;
+  const x = i => pad.l + (i*(iw/(FLOW.length-1)));
+  const y = v => pad.t + ih - (v/max)*ih;
+  const line = key => FLOW.map((d,i)=>`${i?'L':'M'}${x(i)},${y(d[key])}`).join(' ');
+  const area = key => `${line(key)} L${x(FLOW.length-1)},${pad.t+ih} L${x(0)},${pad.t+ih} Z`;
+  const grid = [0,17500,35000,52500,70000];
+
+  return (
+    <div className="panel" style={{ padding:'22px 26px 18px' }}>
+      <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:18 }}>
+        <div>
+          <Eyebrow>6 derniers mois</Eyebrow>
+          <h3 className="serif" style={{ fontSize:18, fontWeight:600, color:'var(--ink)' }}>Flux de trésorerie</h3>
+        </div>
+        <div style={{ display:'flex', gap:18 }}>
+          {[['Revenus','var(--teal)'],['Dépenses','var(--terra)']].map(([l,c])=>(
+            <div key={l} style={{ display:'flex', alignItems:'center', gap:7 }}>
+              <span style={{ width:10, height:10, borderRadius:3, background:c }}/>
+              <span style={{ fontSize:12.5, fontWeight:600, color:'var(--muted)' }}>{l}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      <div style={{ position:'relative' }}>
+        <svg viewBox={`0 0 ${W} ${H}`} width="100%" style={{ display:'block', overflow:'visible' }}
+          onMouseLeave={()=>setHover(null)}>
+          <defs>
+            <linearGradient id="gRev" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#1F6F6B" stopOpacity="0.22"/>
+              <stop offset="100%" stopColor="#1F6F6B" stopOpacity="0"/>
+            </linearGradient>
+            <linearGradient id="gDep" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#C75B39" stopOpacity="0.16"/>
+              <stop offset="100%" stopColor="#C75B39" stopOpacity="0"/>
+            </linearGradient>
+          </defs>
+          {grid.map((g,i)=>(
+            <g key={i}>
+              <line x1={pad.l} y1={y(g)} x2={W-pad.r} y2={y(g)} stroke="var(--line-2)" strokeWidth="1" strokeDasharray={i===0?'0':'3 4'}/>
+              <text x={pad.l-10} y={y(g)+4} textAnchor="end" fontSize="10.5" fill="var(--faint)" fontFamily="Geist Mono">{g/1000}k</text>
+            </g>
+          ))}
+          <path d={area('rev')} fill="url(#gRev)"/>
+          <path d={area('dep')} fill="url(#gDep)"/>
+          <path d={line('dep')} fill="none" stroke="var(--terra)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          <path d={line('rev')} fill="none" stroke="var(--teal)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          {FLOW.map((d,i)=>(
+            <g key={i}>
+              {hover===i && <line x1={x(i)} y1={pad.t} x2={x(i)} y2={pad.t+ih} stroke="var(--plum-3)" strokeWidth="1" strokeDasharray="3 3" opacity="0.4"/>}
+              <circle cx={x(i)} cy={y(d.rev)} r={hover===i?5:3.5} fill="var(--teal)" stroke="var(--paper)" strokeWidth="2"/>
+              <circle cx={x(i)} cy={y(d.dep)} r={hover===i?5:3.5} fill="var(--terra)" stroke="var(--paper)" strokeWidth="2"/>
+              <rect x={x(i)-(iw/(FLOW.length-1))/2} y={pad.t} width={iw/(FLOW.length-1)} height={ih} fill="transparent" onMouseEnter={()=>setHover(i)}/>
+              <text x={x(i)} y={H-8} textAnchor="middle" fontSize="11.5" fontWeight="600" fill={hover===i?'var(--ink)':'var(--muted)'}>{d.m}</text>
+            </g>
+          ))}
+        </svg>
+        {hover!==null && (
+          <div style={{ position:'absolute', top:0, left:`${(x(hover)/W)*100}%`, transform:`translateX(${hover>FLOW.length-2?'-100%':hover<1?'0':'-50%'})`, pointerEvents:'none',
+            background:'var(--plum)', color:'#F4EFE4', borderRadius:12, padding:'10px 13px', boxShadow:'0 14px 30px -10px rgba(46,26,71,.5)', minWidth:140 }}>
+            <div style={{ fontSize:11, fontWeight:700, color:'rgba(244,239,228,.6)', marginBottom:7, letterSpacing:.5 }}>{FLOW[hover].m} 2026</div>
+            {[['Revenus','rev','var(--saffron)'],['Dépenses','dep','#E89478']].map(([l,k,c])=>(
+              <div key={k} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:14, marginTop:3 }}>
+                <span style={{ display:'flex', alignItems:'center', gap:6, fontSize:12 }}><span style={{ width:7, height:7, borderRadius:'50%', background:c }}/>{l}</span>
+                <span className="mono" style={{ fontSize:12, fontWeight:600 }}>{fmtMAD(FLOW[hover][k])}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const Dashboard = ({toast}) => (
+  <div className="rise" style={{ padding:'34px 40px 48px', maxWidth:1320, margin:'0 auto' }}>
+    {/* Greeting */}
+    <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', gap:20, marginBottom:28 }}>
+      <div>
+        <div style={{ fontSize:12.5, color:'var(--muted)', fontWeight:500, marginBottom:6 }}>Mercredi 11 juin 2026</div>
+        <h1 className="serif" style={{ fontSize:30, fontWeight:700, color:'var(--ink)', lineHeight:1.05 }}>Bonjour, Youssef.</h1>
+      </div>
+      <button className="btn btn-plum" style={{ padding:'11px 18px', fontSize:13.5 }} onClick={()=>toast('Nouveau virement — formulaire ouvert')}>{I.send(15)} Nouveau virement</button>
+    </div>
+
+    {/* KPI row */}
+    <div className="stagger" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:18 }}>
+      <Kpi label="Dépenses du mois"    value={fmtMAD(12450)} unit="MAD" pct={-8.2} sub="vs mai" accent="#C75B39" ico={I.down(16)}/>
+      <Kpi label="Revenus du mois"     value={fmtMAD(65200)} unit="MAD" pct={12.5} sub="vs mai" accent="#2F7D55" ico={I.up(16)}/>
+      <Kpi label="Transactions"        value="47" pct={5.3} sub="vs mai" accent="#57399E" ico={I.transfer(16)}/>
+      <Kpi label="Factures en attente" value="3"  pct={0}   sub="stable" accent="#E8A317" ico={I.file(16)}/>
+    </div>
+
+    {/* Chart + Card */}
+    <div style={{ display:'grid', gridTemplateColumns:'1fr 320px', gap:16, marginBottom:16, alignItems:'stretch' }}>
+      <CashflowChart/>
+      <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+        <BankCard width={320}/>
+        <div className="panel" style={{ padding:'15px 18px', display:'flex', alignItems:'center', justifyContent:'space-between', gap:10 }}>
+          <div style={{ minWidth:0 }}>
+            <div style={{ fontSize:9.5, fontWeight:700, letterSpacing:1.2, textTransform:'uppercase', color:'var(--muted)', marginBottom:4 }}>IBAN</div>
+            <div className="mono" style={{ fontSize:12, fontWeight:500, color:'var(--ink)', whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>MA64 0011 2000 0100 1300 3006</div>
+          </div>
+          <button className="btn btn-ghost" style={{ padding:'8px 12px', fontSize:12, flexShrink:0 }} onClick={()=>toast('IBAN copié dans le presse-papier')}>{I.copy(14)}</button>
+        </div>
+      </div>
+    </div>
+
+    {/* Transactions */}
+    <div className="panel" style={{ overflow:'hidden' }}>
+      <div style={{ padding:'18px 24px', display:'flex', alignItems:'center', justifyContent:'space-between', borderBottom:'1px solid var(--line-2)' }}>
+        <h3 className="serif" style={{ fontSize:16, fontWeight:600, color:'var(--ink)' }}>Transactions récentes</h3>
+        <button className="btn btn-ghost" style={{ fontSize:12.5, padding:'8px 14px' }}>Tout afficher {I.chevR(13)}</button>
+      </div>
+      {TX.map((t,i)=>(
+        <div key={t.id} className="row-hover" style={{ padding:'13px 24px', display:'flex', alignItems:'center', gap:14, borderBottom: i<TX.length-1?'1px solid var(--line-2)':'none', background:'var(--paper)' }}>
+          <div style={{ width:38, height:38, borderRadius:10, background:t.clr+'14', display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, flexShrink:0 }}>{t.ico}</div>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontSize:13.5, fontWeight:600, color:'var(--ink)' }}>{t.v}</div>
+            <div style={{ fontSize:11.5, color:'var(--muted)', marginTop:1 }}>{t.cat} · {t.date}</div>
+          </div>
+          <div className="mono" style={{ fontSize:13.5, fontWeight:600, color: t.amt>=0?'var(--pos)':'var(--ink)', flexShrink:0 }}>
+            {t.amt>=0?'+':'−'}{fmtMAD(t.amt)} <span style={{ fontSize:10.5, color:'var(--faint)' }}>MAD</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const Virements = ({toast}) => {
+  const [f,setF] = useState({ bene:'', iban:'', montant:'', motif:'', instant:false });
+  const [busy,setBusy] = useState(false);
+  const set = (k,v)=>setF(p=>({...p,[k]:v}));
+  const recent = [
+    { name:'Agence Digitale Maroc',   iban:'MA64 0123 4567 8901 2345 6789', ini:'AD', clr:'#57399E' },
+    { name:'Startup Casablanca SARL', iban:'MA64 9876 5432 1098 7654 3210', ini:'SC', clr:'#1F6F6B' },
+    { name:'Atlas Consulting',        iban:'MA64 1111 2222 3333 4444 5555', ini:'AC', clr:'#C75B39' },
+  ];
+  const submit = () => {
+    if(!f.bene||!f.iban||!f.montant){ toast('Veuillez remplir les champs obligatoires','error'); return; }
+    setBusy(true);
+    setTimeout(()=>{ setBusy(false); const m=f.montant, b=f.bene; setF({bene:'',iban:'',montant:'',motif:'',instant:false}); toast(`Virement de ${m} MAD envoyé à ${b}`); },1400);
+  };
+  return (
+    <div className="rise" style={{ padding:'30px 36px 40px' }}>
+      <div style={{ marginBottom:24 }}>
+        <Eyebrow>Transfert sécurisé</Eyebrow>
+        <h1 className="serif" style={{ fontSize:28, fontWeight:600, letterSpacing:'-.7px', color:'var(--ink)' }}>Nouveau virement</h1>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 330px', gap:24 }}>
+        <div className="panel" style={{ padding:'30px 34px' }}>
+          <div style={{ display:'flex', flexDirection:'column', gap:20 }}>
+            <div>
+              <label className="label">Bénéficiaire *</label>
+              <input className="field" placeholder="Nom ou raison sociale" value={f.bene} onChange={e=>set('bene',e.target.value)}/>
+            </div>
+            <div>
+              <label className="label">IBAN *</label>
+              <input className="field mono" placeholder="MA64 XXXX XXXX XXXX XXXX XXXX" value={f.iban} onChange={e=>set('iban',e.target.value)} style={{ letterSpacing:1 }}/>
+            </div>
+            <div>
+              <label className="label">Montant *</label>
+              <div style={{ position:'relative' }}>
+                <input className="field" type="number" placeholder="0,00" value={f.montant} onChange={e=>set('montant',e.target.value)} style={{ paddingRight:60, fontWeight:600 }}/>
+                <span style={{ position:'absolute', right:16, top:'50%', transform:'translateY(-50%)', fontSize:13, fontWeight:800, color:'var(--muted)' }}>MAD</span>
+              </div>
+            </div>
+            <div>
+              <label className="label">Motif</label>
+              <input className="field" placeholder="Ex : Facture #2026-047, prestation…" value={f.motif} onChange={e=>set('motif',e.target.value)}/>
+            </div>
+            <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 18px', borderRadius:14, background:'var(--bone)', border:'1px solid var(--line)' }}>
+              <div>
+                <div style={{ fontSize:14, fontWeight:700, color:'var(--ink)', display:'flex', alignItems:'center', gap:7 }}><span style={{ color:'var(--saffron)' }}>{I.zap()}</span> Virement instantané</div>
+                <div style={{ fontSize:12.5, color:'var(--muted)', marginTop:3 }}>Crédité en quelques secondes · +1,50 MAD</div>
+              </div>
+              <Toggle on={f.instant} onChange={v=>set('instant',v)}/>
+            </div>
+            <button className="btn btn-plum" onClick={submit} disabled={busy} style={{ width:'100%', padding:'15px', fontSize:15, opacity:busy?.85:1 }}>
+              {busy ? <><div style={{ width:16, height:16, border:'2.5px solid rgba(244,239,228,.3)', borderTopColor:'#F4EFE4', borderRadius:'50%', animation:'spin .8s linear infinite' }}/> Envoi en cours…</> : <>{I.send()} Confirmer le virement</>}
+            </button>
+          </div>
+        </div>
+        <div style={{ display:'flex', flexDirection:'column', gap:16 }}>
+          <div className="panel" style={{ padding:'22px 22px' }}>
+            <h4 className="serif" style={{ fontSize:16, fontWeight:600, color:'var(--ink)', marginBottom:15 }}>Bénéficiaires récents</h4>
+            {recent.map((r,i)=>(
+              <div key={i} className="row-hover" onClick={()=>setF(p=>({...p,bene:r.name,iban:r.iban}))} style={{ display:'flex', alignItems:'center', gap:12, padding:'11px 12px', borderRadius:12, cursor:'pointer', marginBottom:4 }}>
+                <div style={{ width:36, height:36, borderRadius:10, flexShrink:0, background:r.clr+'18', color:r.clr, display:'flex', alignItems:'center', justifyContent:'center', fontSize:12.5, fontWeight:800 }}>{r.ini}</div>
+                <div style={{ flex:1, minWidth:0 }}>
+                  <div style={{ fontSize:13, fontWeight:700, color:'var(--ink)' }}>{r.name}</div>
+                  <div className="mono" style={{ fontSize:11, color:'var(--muted)', marginTop:2 }}>{r.iban.slice(0,14)}…</div>
+                </div>
+                {I.chevR(14)}
+              </div>
+            ))}
+          </div>
+          <div className="zellige grain" style={{ position:'relative', overflow:'hidden', padding:'22px', borderRadius:16, background:'linear-gradient(150deg,var(--plum),var(--plum-2))', color:'#F4EFE4' }}>
+            <div style={{ position:'relative', zIndex:1 }}>
+              <div style={{ fontSize:12.5, fontWeight:700, color:'rgba(244,239,228,.7)', marginBottom:10 }}>Plafond journalier</div>
+              <div style={{ height:7, background:'rgba(255,255,255,.15)', borderRadius:5, overflow:'hidden', marginBottom:8 }}>
+                <div style={{ height:'100%', width:'10%', background:'var(--saffron)', borderRadius:5 }}/>
+              </div>
+              <div className="mono" style={{ fontSize:12.5, color:'rgba(244,239,228,.85)' }}>5 000 / 50 000 MAD</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const Carte = ({toast}) => {
+  const [active,setActive] = useState(true);
+  const [plafond,setPlafond] = useState(5000);
+  const [online,setOnline] = useState(true);
+  const [intl,setIntl] = useState(false);
+  const toggle = () => { const n=!active; setActive(n); toast(n?'Carte activée — transactions autorisées':'Carte bloquée — transactions suspendues'); };
+  return (
+    <div className="rise" style={{ padding:'30px 36px 40px' }}>
+      <div style={{ marginBottom:24 }}>
+        <Eyebrow>Gestion de carte</Eyebrow>
+        <h1 className="serif" style={{ fontSize:28, fontWeight:600, letterSpacing:'-.7px', color:'var(--ink)' }}>Carte SADAD</h1>
+      </div>
+      <div style={{ display:'grid', gridTemplateColumns:'360px 1fr', gap:24 }}>
+        <div style={{ display:'flex', flexDirection:'column', gap:14 }}>
+          <div style={{ filter: active?'none':'grayscale(.7) brightness(.85)', transition:'filter .4s' }}><BankCard width={360}/></div>
+          {!active && <div style={{ padding:'12px 16px', borderRadius:12, background:'rgba(181,64,42,.1)', border:'1px solid rgba(181,64,42,.25)', color:'var(--neg)', fontSize:13.5, fontWeight:700, display:'flex', alignItems:'center', gap:8 }}>🔒 Carte bloquée — aucune transaction possible</div>}
+          <div className="panel" style={{ padding:'18px 22px' }}>
+            <div style={{ fontSize:10.5, fontWeight:800, letterSpacing:1.5, textTransform:'uppercase', color:'var(--muted)', marginBottom:14 }}>Détails</div>
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr 1fr', gap:12 }}>
+              {[['Expiration','09/28',true],['Type','Débit',false],['Réseau','Mastercard',false]].map(([l,v,m])=>(
+                <div key={l}>
+                  <div style={{ fontSize:11, color:'var(--muted)', marginBottom:4 }}>{l}</div>
+                  <div className={m?'mono':''} style={{ fontSize:13.5, fontWeight:700, color:'var(--ink)' }}>{v}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="panel" style={{ padding:'28px 32px' }}>
+          <div style={{ padding:'18px 22px', borderRadius:15, marginBottom:26, display:'flex', alignItems:'center', justifyContent:'space-between', gap:14,
+            background: active?'rgba(47,125,85,.08)':'rgba(181,64,42,.07)', border:`1.5px solid ${active?'rgba(47,125,85,.25)':'rgba(181,64,42,.22)'}` }}>
+            <div>
+              <div className="serif" style={{ fontSize:18, fontWeight:600, color: active?'var(--pos)':'var(--neg)' }}>{active?'Carte active':'Carte bloquée'}</div>
+              <div style={{ fontSize:12.5, color:'var(--muted)', marginTop:3 }}>{active?'Toutes les transactions sont autorisées':'Les paiements sont temporairement suspendus'}</div>
+            </div>
+            <button className={`btn ${active?'btn-ghost':'btn-plum'}`} onClick={toggle} style={{ whiteSpace:'nowrap', color: active?'var(--neg)':undefined, borderColor: active?'rgba(181,64,42,.3)':undefined }}>{active?'Bloquer':'Activer'}</button>
+          </div>
+
+          <div style={{ paddingBottom:24, marginBottom:24, borderBottom:'1px solid var(--line-2)' }}>
+            <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:16 }}>
+              <span style={{ fontSize:14.5, fontWeight:700, color:'var(--ink)' }}>Plafond journalier</span>
+              <span className="serif" style={{ fontSize:20, fontWeight:600, color:'var(--plum-3)' }}>{fmtMAD(plafond)} <span style={{ fontSize:12, color:'var(--muted)' }}>MAD</span></span>
+            </div>
+            <input type="range" min={0} max={10000} step={500} value={plafond} onChange={e=>setPlafond(+e.target.value)}/>
+            <div style={{ display:'flex', justifyContent:'space-between', fontSize:11.5, color:'var(--faint)', marginTop:8 }}><span>0 MAD</span><span>10 000 MAD</span></div>
+          </div>
+
+          <div style={{ paddingBottom:24, marginBottom:24, borderBottom:'1px solid var(--line-2)' }}>
+            {[
+              { label:'Paiement en ligne', sub:'Achats sur internet', val:online, set:v=>{ setOnline(v); toast(v?'Paiement en ligne activé':'Paiement en ligne désactivé'); } },
+              { label:'Paiement international', sub:'Transactions hors Maroc', val:intl, set:v=>{ setIntl(v); toast(v?'Paiement international activé':'Paiement international désactivé'); } },
+            ].map((r,i,a)=>(
+              <div key={r.label} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'13px 0', borderBottom: i<a.length-1?'1px solid var(--line-2)':'none' }}>
+                <div>
+                  <div style={{ fontSize:14, fontWeight:700, color:'var(--ink)' }}>{r.label}</div>
+                  <div style={{ fontSize:12.5, color:'var(--muted)', marginTop:2 }}>{r.sub}</div>
+                </div>
+                <Toggle on={r.val} onChange={r.set}/>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12 }}>
+            <button className="btn btn-ghost" onClick={()=>toast('Nouveau code PIN envoyé par SMS')}>Modifier le PIN</button>
+            <button className="btn btn-ghost" onClick={()=>toast('Demande de carte physique enregistrée')}>Commander une carte</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const INV0 = [
+  { id:'FAC-2026-047', client:'Agence Digitale Maroc',   date:'10 juin 2026', amt:15000, st:'pos'  },
+  { id:'FAC-2026-046', client:'Startup Casablanca SARL', date:'05 juin 2026', amt:8500,  st:'wait' },
+  { id:'FAC-2026-045', client:'Holding Atlas Group',      date:'28 mai 2026',  amt:32000, st:'neg'  },
+];
+const ST = { pos:{l:'Payée',c:'b-pos'}, wait:{l:'En attente',c:'b-wait'}, neg:{l:'En retard',c:'b-neg'} };
+
+const Facturation = ({toast}) => {
+  const [inv,setInv] = useState(INV0);
+  const add = () => { setInv(p=>[{ id:'FAC-2026-048', client:'Nouveau client', date:'11 juin 2026', amt:0, st:'wait' },...p]); toast('Facture FAC-2026-048 créée'); };
+  return (
+    <div className="rise" style={{ padding:'30px 36px 40px' }}>
+      <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:24, gap:16 }}>
+        <div>
+          <Eyebrow>Gestion commerciale</Eyebrow>
+          <h1 className="serif" style={{ fontSize:28, fontWeight:600, letterSpacing:'-.7px', color:'var(--ink)' }}>Facturation</h1>
+        </div>
+        <button className="btn btn-saffron" onClick={add}>{I.plus()} Nouvelle facture</button>
+      </div>
+
+      <div className="stagger" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:24 }}>
+        {[
+          { l:'Factures émises', v:'3', u:'', s:'ce mois-ci', a:'#57399E' },
+          { l:'Encaissé', v:fmtMAD(15000), u:'MAD', s:'1 facture payée', a:'#2F7D55' },
+          { l:'En attente', v:fmtMAD(40500), u:'MAD', s:'2 factures dues', a:'#E8A317' },
+        ].map(s=>(
+          <div key={s.l} className="panel" style={{ padding:'20px 24px', position:'relative', overflow:'hidden' }}>
+            <div style={{ position:'absolute', top:0, left:0, width:4, height:'100%', background:s.a }}/>
+            <div style={{ fontSize:12.5, color:'var(--muted)', fontWeight:600, marginBottom:9 }}>{s.l}</div>
+            <div style={{ display:'flex', alignItems:'baseline', gap:5 }}>
+              <span className="serif" style={{ fontSize:24, fontWeight:600, color:'var(--ink)', letterSpacing:'-.5px' }}>{s.v}</span>
+              {s.u && <span style={{ fontSize:12, fontWeight:600, color:'var(--muted)' }}>{s.u}</span>}
+            </div>
+            <div style={{ fontSize:11.5, color:'var(--faint)', marginTop:5 }}>{s.s}</div>
+          </div>
+        ))}
+      </div>
+
+      <div className="panel" style={{ overflow:'hidden' }}>
+        <div style={{ padding:'10px 26px', display:'grid', gridTemplateColumns:'1.3fr 2fr 1.3fr 1.3fr 1fr', background:'var(--bone)', borderBottom:'1px solid var(--line)', fontSize:11, fontWeight:800, letterSpacing:1, textTransform:'uppercase', color:'var(--muted)' }}>
+          <span>N°</span><span>Client</span><span>Date</span><span>Montant</span><span>Statut</span>
+        </div>
+        {inv.map((x,i)=>{ const s=ST[x.st]; return (
+          <div key={x.id} className="row-hover" style={{ padding:'16px 26px', display:'grid', gridTemplateColumns:'1.3fr 2fr 1.3fr 1.3fr 1fr', alignItems:'center', borderBottom: i<inv.length-1?'1px solid var(--line-2)':'none', background:'var(--paper)', cursor:'pointer' }}>
+            <span className="mono" style={{ fontSize:12.5, fontWeight:600, color:'var(--plum-3)' }}>{x.id}</span>
+            <span style={{ fontSize:14, fontWeight:600, color:'var(--ink)' }}>{x.client}</span>
+            <span style={{ fontSize:13, color:'var(--muted)' }}>{x.date}</span>
+            <span className="mono" style={{ fontSize:14, fontWeight:600, color:'var(--ink)' }}>{fmtMAD(x.amt)} <span style={{ fontSize:11, color:'var(--faint)' }}>MAD</span></span>
+            <div style={{ display:'flex', alignItems:'center', gap:14, justifyContent:'space-between' }}>
+              <span className={`badge ${s.c}`}>{s.l}</span>
+              <button onClick={()=>toast(`Facture ${x.id} téléchargée`)} style={{ background:'none', border:'none', color:'var(--muted)', cursor:'pointer', display:'flex', padding:4 }}>{I.dl()}</button>
+            </div>
+          </div>
+        ); })}
+      </div>
+    </div>
+  );
+};
+
+/* ━━━━━━━━━━ SCANNER ━━━━━━━━━━ */
+const SCANNED = [
+  { name:'Reçu — Total Maroc', date:"Aujourd'hui · 09:14", amt:450, cat:'Carburant', ico:'⛽', clr:'#C75B39' },
+  { name:'Facture — AWS', date:'Hier · 18:42', amt:320, cat:'Cloud & Tech', ico:'☁️', clr:'#6B7A3A' },
+  { name:'Reçu — Carrefour', date:'09 juin · 14:20', amt:892.5, cat:'Fournitures', ico:'🛒', clr:'#2E1A47' },
+];
+
+const Scanner = ({toast}) => {
+  const [state,setState] = useState('idle'); // idle | scanning | done
+  const fileRef = React.useRef(null);
+  const extracted = { fournisseur:'Maroc Telecom', num:'FR-2026-00891', date:'11 juin 2026', ht:1082.5, tva:216.5, ttc:1299, cat:'Téléphonie', mode:'Carte SADAD •••• 4829' };
+
+  const run = () => { setState('scanning'); setTimeout(()=>{ setState('done'); toast('Document analysé — données extraites par IA'); }, 1900); };
+
+  return (
+    <div className="rise" style={{ padding:'30px 36px 40px' }}>
+      <div style={{ marginBottom:24 }}>
+        <Eyebrow>Extraction intelligente</Eyebrow>
+        <h1 className="serif" style={{ fontSize:28, fontWeight:600, letterSpacing:'-.7px', color:'var(--ink)' }}>Scanner une facture ou un reçu</h1>
+        <p style={{ fontSize:14.5, color:'var(--muted)', marginTop:6 }}>Photographiez ou importez un document — l'IA extrait le montant, la TVA et le fournisseur automatiquement.</p>
+      </div>
+
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:24, marginBottom:24 }}>
+        {/* Dropzone */}
+        <div className="panel" style={{ padding:'6px' }}>
+          <input ref={fileRef} type="file" accept="image/*,.pdf" style={{ display:'none' }} onChange={run}/>
+          <div onClick={()=> state!=='scanning' && (fileRef.current ? fileRef.current.click() : run())}
+            style={{ height:'100%', minHeight:380, borderRadius:14, border:'2px dashed var(--line)', background:'var(--bone)',
+              display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', padding:'30px',
+              cursor: state==='scanning'?'default':'pointer', transition:'border-color .2s, background .2s', position:'relative', overflow:'hidden' }}
+            onMouseEnter={e=>{ if(state!=='scanning'){ e.currentTarget.style.borderColor='var(--plum-3)'; e.currentTarget.style.background='#F3F0FB'; } }}
+            onMouseLeave={e=>{ e.currentTarget.style.borderColor='var(--line)'; e.currentTarget.style.background='var(--bone)'; }}>
+            {state==='scanning' ? (
+              <>
+                <div style={{ width:64, height:64, borderRadius:18, background:'var(--plum)', display:'flex', alignItems:'center', justifyContent:'center', color:'#F4EFE4', marginBottom:18, position:'relative' }}>
+                  {I.scan(28)}
+                  <div style={{ position:'absolute', left:8, right:8, height:2, background:'var(--saffron)', borderRadius:2, boxShadow:'0 0 10px 2px rgba(232,163,23,.6)', animation:'scanline 1.4s ease-in-out infinite' }}/>
+                </div>
+                <div className="serif" style={{ fontSize:18, fontWeight:600, color:'var(--ink)' }}>Analyse en cours…</div>
+                <div style={{ fontSize:13, color:'var(--muted)', marginTop:5, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:'var(--saffron)' }}>{I.spark(13)}</span> Lecture du document par l'IA</div>
+              </>
+            ) : (
+              <>
+                <div style={{ width:64, height:64, borderRadius:18, background:'#EDE7F8', display:'flex', alignItems:'center', justifyContent:'center', color:'var(--plum-3)', marginBottom:18 }}>{I.upload(28)}</div>
+                <div className="serif" style={{ fontSize:18, fontWeight:600, color:'var(--ink)' }}>Glissez votre document ici</div>
+                <div style={{ fontSize:13, color:'var(--muted)', marginTop:6, maxWidth:280 }}>JPG, PNG ou PDF · jusqu'à 10 Mo</div>
+                <div style={{ display:'flex', gap:10, marginTop:20 }}>
+                  <button className="btn btn-plum" onClick={(e)=>{ e.stopPropagation(); fileRef.current ? fileRef.current.click() : run(); }}>{I.upload(15)} Importer</button>
+                  <button className="btn btn-ghost" onClick={(e)=>{ e.stopPropagation(); run(); }}>{I.cam()} Photo</button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Result */}
+        <div className="panel" style={{ padding:'26px 28px', display:'flex', flexDirection:'column' }}>
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:18 }}>
+            <h3 className="serif" style={{ fontSize:17, fontWeight:600, color:'var(--ink)' }}>Données extraites</h3>
+            {state==='done' && <span className="badge b-pos">Vérifié IA</span>}
+          </div>
+
+          {state!=='done' ? (
+            <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', textAlign:'center', color:'var(--faint)', gap:12 }}>
+              <div style={{ color:'var(--line)' }}>{I.file(40)}</div>
+              <div style={{ fontSize:13.5, maxWidth:220 }}>Les informations du document apparaîtront ici après l'analyse.</div>
+            </div>
+          ) : (
+            <div className="rise" style={{ flex:1, display:'flex', flexDirection:'column' }}>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'14px 18px', marginBottom:18 }}>
+                {[
+                  ['Fournisseur', extracted.fournisseur, false],
+                  ['N° document', extracted.num, true],
+                  ['Date', extracted.date, false],
+                  ['Catégorie', extracted.cat, false],
+                  ['Montant HT', fmtMAD(extracted.ht)+' MAD', true],
+                  ['TVA (20%)', fmtMAD(extracted.tva)+' MAD', true],
+                ].map(([l,v,m])=>(
+                  <div key={l}>
+                    <div style={{ fontSize:11, fontWeight:700, letterSpacing:.5, textTransform:'uppercase', color:'var(--muted)', marginBottom:4 }}>{l}</div>
+                    <div className={m?'mono':''} style={{ fontSize:14, fontWeight:700, color:'var(--ink)' }}>{v}</div>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 18px', borderRadius:14, background:'linear-gradient(150deg,var(--plum),var(--plum-2))', color:'#F4EFE4', marginBottom:18 }}>
+                <div>
+                  <div style={{ fontSize:11, letterSpacing:1, textTransform:'uppercase', color:'rgba(244,239,228,.6)' }}>Total TTC</div>
+                  <div style={{ fontSize:12, color:'rgba(244,239,228,.55)', marginTop:2 }}>{extracted.mode}</div>
+                </div>
+                <div className="serif" style={{ fontSize:26, fontWeight:600 }}>{fmtMAD(extracted.ttc)} <span style={{ fontSize:13 }}>MAD</span></div>
+              </div>
+              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:12, marginTop:'auto' }}>
+                <button className="btn btn-ghost" onClick={()=>{ setState('idle'); }}>Nouveau scan</button>
+                <button className="btn btn-saffron" onClick={()=>{ toast('Dépense enregistrée depuis le document'); setState('idle'); }}>Enregistrer la dépense</button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* History */}
+      <div className="panel" style={{ overflow:'hidden' }}>
+        <div style={{ padding:'18px 26px 14px', borderBottom:'1px solid var(--line-2)' }}>
+          <Eyebrow>Historique</Eyebrow>
+          <h3 className="serif" style={{ fontSize:17, fontWeight:600, color:'var(--ink)' }}>Documents récemment scannés</h3>
+        </div>
+        {SCANNED.map((d,i)=>(
+          <div key={i} className="row-hover" style={{ padding:'14px 26px', display:'flex', alignItems:'center', gap:15, borderBottom: i<SCANNED.length-1?'1px solid var(--line-2)':'none', background:'var(--paper)' }}>
+            <div style={{ width:42, height:42, borderRadius:12, background:d.clr+'16', display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, flexShrink:0 }}>{d.ico}</div>
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontSize:14, fontWeight:700, color:'var(--ink)' }}>{d.name}</div>
+              <div style={{ fontSize:12, color:'var(--muted)', marginTop:2 }}>{d.cat} · {d.date}</div>
+            </div>
+            <span className="badge b-pos" style={{ marginRight:6 }}>Classé</span>
+            <div className="mono" style={{ fontSize:14, fontWeight:600, color:'var(--ink)', flexShrink:0 }}>{fmtMAD(d.amt)} <span style={{ fontSize:11, color:'var(--faint)' }}>MAD</span></div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+const PLANS = [
+  { name:'Gratuit', price:'0', per:'pour toujours', current:true, theme:'light',
+    f:[['Virements','5 / mois'],['Facturation','3 factures'],['Cartes','1 carte'],['Utilisateurs','1'],['Support','Email'],['Analytics','—'],['API','—']] },
+  { name:'Pro', price:'99', per:'/ mois HT', badge:'Le plus choisi', cta:'Passer à Pro', theme:'dark',
+    f:[['Virements','Illimité'],['Facturation','50 / mois'],['Cartes','3 cartes'],['Utilisateurs','3'],['Support','Prioritaire'],['Analytics','Tableau de bord'],['API','Inclus']] },
+  { name:'Business', price:'299', per:'/ mois HT', cta:"Contacter l'équipe", theme:'saffron',
+    f:[['Virements','Illimité'],['Facturation','Illimité'],['Cartes','10 cartes'],['Utilisateurs','Illimité'],['Support','Dédié 24/7'],['Analytics','Avancé + Export'],['API','Full Access']] },
+];
+
+const SadadPro = ({toast}) => (
+  <div className="rise" style={{ padding:'30px 36px 40px' }}>
+    <div className="zellige grain" style={{ position:'relative', overflow:'hidden', borderRadius:22, padding:'42px 44px', marginBottom:30,
+      background:'radial-gradient(120% 130% at 85% 0%, rgba(232,163,23,.25), transparent 50%), linear-gradient(150deg,#241338,#2E1A47 55%,#3F2766)', color:'#F4EFE4' }}>
+      <div className="card-ring" style={{ width:300, height:300, top:-140, right:-60 }}/>
+      <div style={{ position:'relative', zIndex:1 }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:7, padding:'5px 14px', background:'rgba(232,163,23,.18)', borderRadius:20, marginBottom:16 }}>
+          <span style={{ fontSize:11, fontWeight:800, letterSpacing:1.5, color:'var(--saffron)' }}>✦ NIVEAU SUPÉRIEUR</span>
+        </div>
+        <h1 className="serif" style={{ fontSize:34, fontWeight:600, letterSpacing:'-1px', lineHeight:1.1, maxWidth:560 }}>Développez votre business sans limites.</h1>
+        <p style={{ fontSize:15, color:'rgba(244,239,228,.65)', marginTop:14, maxWidth:520, lineHeight:1.6 }}>Virements illimités, facturation avancée et support dédié — pensés pour les entrepreneurs et PME marocains.</p>
+      </div>
+    </div>
+
+    <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20, marginBottom:26, alignItems:'start' }}>
+      {PLANS.map(p=>{
+        const dark = p.theme==='dark', saff = p.theme==='saffron';
+        const bg = dark ? 'linear-gradient(155deg,#241338,#3F2766)' : saff ? 'var(--ink)' : 'var(--paper)';
+        const txt = (dark||saff) ? '#F4EFE4' : 'var(--ink)';
+        const mut = (dark||saff) ? 'rgba(244,239,228,.5)' : 'var(--muted)';
+        return (
+          <div key={p.name} className={dark?'zellige grain':''} style={{ position:'relative', overflow:'hidden', borderRadius:20, padding:'30px 28px', background:bg,
+            border: dark?'1.5px solid rgba(232,163,23,.35)':'1px solid var(--line)',
+            transform: dark?'scale(1.03)':'none', boxShadow: dark?'0 26px 60px -20px rgba(46,26,71,.5)':'0 2px 14px -8px rgba(46,26,71,.12)' }}>
+            {p.badge && <div style={{ position:'absolute', top:0, right:0, background:'var(--saffron)', color:'#2A1505', padding:'5px 16px', borderBottomLeftRadius:14, fontSize:11.5, fontWeight:800, letterSpacing:.3 }}>{p.badge}</div>}
+            <div style={{ fontSize:12, fontWeight:800, letterSpacing:2, textTransform:'uppercase', color:mut, marginBottom:14, position:'relative', zIndex:1 }}>{p.name}</div>
+            <div style={{ marginBottom:24, position:'relative', zIndex:1, display:'flex', alignItems:'baseline', gap:5 }}>
+              <span className="serif" style={{ fontSize:42, fontWeight:600, letterSpacing:'-1.5px', color:txt }}>{p.price}</span>
+              <span style={{ fontSize:13, fontWeight:600, color:mut }}>MAD {p.per}</span>
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', gap:12, marginBottom:26, position:'relative', zIndex:1 }}>
+              {p.f.map(([l,v])=>{ const off = v==='—'; return (
+                <div key={l} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:8 }}>
+                  <span style={{ display:'flex', alignItems:'center', gap:8, fontSize:13, color:mut }}>
+                    <span style={{ color: off ? (dark||saff?'rgba(244,239,228,.25)':'var(--faint)') : (dark||saff?'var(--saffron)':'var(--teal)'), display:'flex' }}>{off?I.x(12):I.check(13)}</span>{l}
+                  </span>
+                  <span style={{ fontSize:13, fontWeight:700, color: off ? (dark||saff?'rgba(244,239,228,.3)':'var(--faint)') : txt }}>{v}</span>
+                </div>
+              ); })}
+            </div>
+            <div style={{ position:'relative', zIndex:1 }}>
+              {p.current
+                ? <div style={{ width:'100%', padding:'13px', borderRadius:12, textAlign:'center', fontSize:13.5, fontWeight:700, color:'var(--muted)', background:'var(--bone-2)' }}>Plan actuel</div>
+                : <button className={`btn btn-saffron`} onClick={()=>toast(p.name==='Pro'?'Passage au plan Pro initié — redirection paiement…':'Un conseiller SADAD vous contactera sous 24h')} style={{ width:'100%', padding:'14px', fontSize:14.5 }}>{p.cta}</button>}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+    <div style={{ textAlign:'center', fontSize:13, color:'var(--muted)' }}>
+      TVA 20% non incluse · Sans engagement · Résiliable à tout moment
+      <span style={{ margin:'0 10px', color:'var(--faint)' }}>—</span>
+      <span style={{ color:'var(--plum-3)', fontWeight:700, cursor:'pointer' }}>Voir les conditions</span>
+    </div>
+  </div>
+);
+
+const CRUMB = { dashboard:'Tableau de bord', virements:'Virements', carte:'Carte SADAD', facturation:'Facturation', scanner:'Scanner', pro:'SADAD Pro' };
+
+function App(){
+  const [tab,setTab] = useState('dashboard');
+  const [toasts,setToasts] = useState([]);
+  const toast = useCallback((msg,type='success')=>{
+    const id = Date.now()+Math.random();
+    setToasts(p=>[...p,{ id, message:msg, type }]);
+    setTimeout(()=>setToasts(p=>p.filter(t=>t.id!==id)),4000);
+  },[]);
+  const dismiss = useCallback(id=>setToasts(p=>p.filter(t=>t.id!==id)),[]);
+  const Page = { dashboard:Dashboard, virements:Virements, carte:Carte, facturation:Facturation, scanner:Scanner, pro:SadadPro }[tab];
+  return (
+    <div style={{ display:'flex', height:'100vh', overflow:'hidden', background:'var(--bone)' }}>
+      <Sidebar active={tab} setActive={setTab}/>
+      <div style={{ marginLeft:248, flex:1, display:'flex', flexDirection:'column', overflow:'hidden' }}>
+        <Topbar crumb={CRUMB[tab]}/>
+        <main style={{ flex:1, overflowY:'auto' }}><Page key={tab} toast={toast}/></main>
+      </div>
+      <Toasts toasts={toasts} dismiss={dismiss}/>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
