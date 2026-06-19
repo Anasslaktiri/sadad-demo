@@ -25,30 +25,41 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bone:    #F4F1EA;
-      --bone-2:  #ECE7DB;
-      --paper:   #FBFAF6;
+      /* ── Brand, sampled from the Sadad logo ── */
+      --indigo:    #2b1763;   /* main brand color  */
+      --indigo-d:  #1e0f49;   /* deeper, gradients  */
+      --indigo-2:  #3a2185;
+      --violet:    #5b33e8;   /* electric accent    */
+      --violet-2:  #7857f0;   /* lighter / hover    */
+      --lilac:     #a99be0;   /* logo lower petal   */
+      --lilac-soft:#ede9fb;
+
+      /* cool, lavender-tinted neutrals */
+      --bone:    #F4F3FB;
+      --bone-2:  #E9E6F6;
+      --paper:   #FFFFFF;
       --paper-2: #FFFFFF;
 
-      --ink:     #1C1A17;
-      --ink-2:   #3A352E;
-      --muted:   #8A8275;
-      --faint:   #B5AD9E;
+      --ink:     #1B1430;
+      --ink-2:   #393256;
+      --muted:   #797392;
+      --faint:   #ABA4C6;
 
-      --plum:    #2E1A47;
-      --plum-2:  #3F2766;
-      --plum-3:  #57399E;
+      /* legacy aliases — existing markup keeps working */
+      --plum:    var(--indigo);
+      --plum-2:  var(--indigo-2);
+      --plum-3:  var(--violet);
 
-      --saffron: #E8A317;
-      --terra:   #C75B39;
-      --teal:    #1F6F6B;
-      --olive:   #6B7A3A;
+      --saffron: var(--violet);    /* bright accent, repurposed */
+      --terra:   var(--violet);
+      --teal:    #16A06A;          /* positive / income          */
+      --olive:   #16A06A;
 
-      --line:    #DED7C8;
-      --line-2:  #E8E2D5;
+      --line:    #E6E3F2;
+      --line-2:  #F0EEF8;
 
-      --pos:     #2F7D55;
-      --neg:     #B5402A;
+      --pos:     #15935F;
+      --neg:     #D9472F;
     }
 
     body {
@@ -63,8 +74,8 @@
 
     ::-webkit-scrollbar { width: 8px; height: 8px; }
     ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: #CFC7B6; border-radius: 8px; }
-    ::-webkit-scrollbar-thumb:hover { background: #BBB19C; }
+    ::-webkit-scrollbar-thumb { background: #CFC7E8; border-radius: 8px; }
+    ::-webkit-scrollbar-thumb:hover { background: #B7ABDD; }
 
     .zellige {
       background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-opacity='0.05' stroke-width='1'%3E%3Cpath d='M30 0L60 30L30 60L0 30Z'/%3E%3Cpath d='M30 15L45 30L30 45L15 30Z'/%3E%3Ccircle cx='30' cy='30' r='3'/%3E%3C/g%3E%3C/svg%3E");
@@ -86,7 +97,7 @@
     .sidebar-glow {
       position: absolute; bottom: -120px; left: -60px;
       width: 280px; height: 280px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(232,163,23,0.18), transparent 70%);
+      background: radial-gradient(circle, rgba(91,51,232,0.18), transparent 70%);
       pointer-events: none;
     }
     .nav-item {
@@ -108,8 +119,8 @@
     .bank-card {
       border-radius: 22px; position: relative; overflow: hidden; color: #F4EFE4;
       background:
-        radial-gradient(120% 120% at 85% 10%, rgba(232,163,23,0.22), transparent 45%),
-        linear-gradient(150deg, #241338 0%, #2E1A47 45%, #3F2766 100%);
+        radial-gradient(120% 120% at 85% 10%, rgba(91,51,232,0.22), transparent 45%),
+        linear-gradient(150deg, #1e0f49 0%, #2b1763 45%, #3a2185 100%);
       box-shadow: 0 30px 60px -20px rgba(46,26,71,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
     }
     .card-ring {
@@ -118,7 +129,7 @@
     }
     .emv {
       width: 44px; height: 34px; border-radius: 6px; position: relative; overflow: hidden;
-      background: linear-gradient(135deg, #B8881A 0%, #F4D77A 45%, #A8770F 100%);
+      background: linear-gradient(135deg, #C9BCF0 0%, #FFFFFF 45%, #A99BE0 100%);
     }
     .emv::before { content:''; position:absolute; top:50%; left:0; right:0; height:1px; background: rgba(0,0,0,.22); }
     .emv::after  { content:''; position:absolute; left:50%; top:0; bottom:0; width:1px; background: rgba(0,0,0,.22); }
@@ -138,8 +149,8 @@
     .btn:active { transform: translateY(1px); }
     .btn-plum  { background: var(--plum); color: #F4EFE4; box-shadow: 0 8px 20px -8px rgba(46,26,71,0.6); }
     .btn-plum:hover { background: var(--plum-2); }
-    .btn-saffron { background: var(--saffron); color: #2A1A05; box-shadow: 0 8px 20px -8px rgba(232,163,23,0.6); }
-    .btn-saffron:hover { background: #F0B12E; }
+    .btn-saffron { background: var(--saffron); color: #ffffff; box-shadow: 0 8px 20px -8px rgba(91,51,232,0.6); }
+    .btn-saffron:hover { background: #7a59f2; }
     .btn-ghost { background: transparent; color: var(--ink); border: 1.5px solid var(--line); }
     .btn-ghost:hover { background: var(--bone-2); border-color: var(--faint); }
 
@@ -164,7 +175,7 @@
     .badge { display:inline-flex; align-items:center; gap:5px; padding:4px 11px; border-radius:20px; font-size:12px; font-weight:700; letter-spacing:.01em; }
     .badge::before { content:''; width:6px; height:6px; border-radius:50%; }
     .b-pos { background: rgba(47,125,85,.12); color: var(--pos); } .b-pos::before { background: var(--pos); }
-    .b-wait{ background: rgba(232,163,23,.15); color: #9A6A05; } .b-wait::before { background: var(--saffron); }
+    .b-wait{ background: rgba(91,51,232,.15); color: #5b33e8; } .b-wait::before { background: var(--saffron); }
     .b-neg { background: rgba(181,64,42,.12); color: var(--neg); } .b-neg::before { background: var(--neg); }
 
     @keyframes rise { from { opacity:0; transform: translateY(14px); } to { opacity:1; transform:none; } }
@@ -262,8 +273,8 @@ const BankCard = ({ width=400 }) => {
           </div>
           <div style={{ textAlign:'right' }}>
             <div style={{ display:'flex', justifyContent:'flex-end', marginBottom:3 }}>
-              <div style={{ width:26, height:26, borderRadius:'50%', background:'rgba(232,163,23,.85)', marginRight:-9 }}/>
-              <div style={{ width:26, height:26, borderRadius:'50%', background:'rgba(199,91,57,.8)' }}/>
+              <div style={{ width:26, height:26, borderRadius:'50%', background:'rgba(91,51,232,.85)', marginRight:-9 }}/>
+              <div style={{ width:26, height:26, borderRadius:'50%', background:'rgba(120,87,240,.8)' }}/>
             </div>
             <div style={{ fontSize:7, letterSpacing:1.5, color:'rgba(244,239,228,.4)' }}>mastercard</div>
           </div>
@@ -283,7 +294,7 @@ const Toasts = ({toasts, dismiss}) => (
         color:'#F4EFE4', boxShadow:'0 18px 40px -12px rgba(28,16,40,.5)', border:'1px solid rgba(255,255,255,.08)'
       }}>
         <div style={{ width:26, height:26, borderRadius:'50%', flexShrink:0, display:'flex', alignItems:'center', justifyContent:'center',
-          background: t.type==='error' ? 'rgba(199,91,57,.3)' : 'rgba(232,163,23,.25)', color: t.type==='error' ? '#E89478' : 'var(--saffron)' }}>
+          background: t.type==='error' ? 'rgba(120,87,240,.3)' : 'rgba(91,51,232,.25)', color: t.type==='error' ? '#E89478' : 'var(--saffron)' }}>
           {t.type==='error'?I.x(13):I.check(14)}
         </div>
         <span style={{ flex:1, fontSize:13.5, fontWeight:500, lineHeight:1.35 }}>{t.message}</span>
@@ -305,16 +316,11 @@ const NAV = [
 const Sidebar = ({active, setActive}) => (
   <div className="sidebar">
     <div className="sidebar-glow"/>
-    <div style={{ padding:'30px 24px 22px', position:'relative', zIndex:1 }}>
-      <div style={{ display:'flex', alignItems:'center', gap:11 }}>
-        <div style={{ width:38, height:38, borderRadius:11, background:'linear-gradient(140deg,var(--saffron),var(--terra))', display:'flex', alignItems:'center', justifyContent:'center', boxShadow:'0 6px 16px -6px rgba(232,163,23,.7)' }}>
-          <span className="serif" style={{ color:'#2A1505', fontWeight:900, fontSize:20 }}>S</span>
-        </div>
-        <div>
-          <div className="serif" style={{ color:'#F4EFE4', fontWeight:700, fontSize:21, letterSpacing:'-.5px', lineHeight:1 }}>SADAD</div>
-          <div style={{ fontSize:8.5, color:'rgba(244,239,228,.42)', letterSpacing:2, textTransform:'uppercase', marginTop:3 }}>by LegalPlus.ma</div>
-        </div>
+    <div style={{ padding:'26px 22px 20px', position:'relative', zIndex:1 }}>
+      <div style={{ background:'#fff', borderRadius:14, padding:'14px 18px', boxShadow:'0 10px 28px -14px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.6)' }}>
+        <div style={{ height:34, backgroundImage:'url("sadad%20logo.webp")', backgroundRepeat:'no-repeat', backgroundPosition:'center', backgroundSize:'auto 300%' }} role="img" aria-label="Sadad"/>
       </div>
+      <div style={{ fontSize:8.5, color:'rgba(244,239,228,.45)', letterSpacing:2.5, textTransform:'uppercase', marginTop:13, textAlign:'center' }}>by LegalPlus.ma</div>
     </div>
     <div style={{ height:1, background:'rgba(255,255,255,.07)', margin:'0 24px 14px' }}/>
     <div style={{ fontSize:10, letterSpacing:2, textTransform:'uppercase', color:'rgba(244,239,228,.32)', padding:'0 28px 8px', fontWeight:700, position:'relative', zIndex:1 }}>Navigation</div>
@@ -323,13 +329,13 @@ const Sidebar = ({active, setActive}) => (
         <div key={n.id} className={`nav-item ${active===n.id?'active':''}`} onClick={()=>setActive(n.id)}>
           {I[n.icon]()}
           <span style={{ flex:1 }}>{n.label}</span>
-          {n.badge && <span style={{ fontSize:9, fontWeight:800, letterSpacing:.5, background:'var(--saffron)', color:'#2A1505', padding:'2px 7px', borderRadius:6 }}>{n.badge}</span>}
+          {n.badge && <span style={{ fontSize:9, fontWeight:800, letterSpacing:.5, background:'var(--saffron)', color:'#ffffff', padding:'2px 7px', borderRadius:6 }}>{n.badge}</span>}
         </div>
       ))}
     </nav>
     <div style={{ margin:'14px', padding:'16px', borderRadius:14, background:'rgba(255,255,255,.05)', border:'1px solid rgba(255,255,255,.08)', position:'relative', zIndex:1 }}>
       <div style={{ display:'flex', alignItems:'center', gap:11 }}>
-        <div style={{ width:38, height:38, borderRadius:'50%', background:'linear-gradient(135deg,var(--terra),var(--saffron))', display:'flex', alignItems:'center', justifyContent:'center', color:'#2A1505', fontWeight:800, fontSize:14, flexShrink:0 }}>YA</div>
+        <div style={{ width:38, height:38, borderRadius:'50%', background:'linear-gradient(135deg,var(--terra),var(--saffron))', display:'flex', alignItems:'center', justifyContent:'center', color:'#ffffff', fontWeight:800, fontSize:14, flexShrink:0 }}>YA</div>
         <div style={{ flex:1, minWidth:0 }}>
           <div style={{ color:'#F4EFE4', fontSize:13.5, fontWeight:700, whiteSpace:'nowrap', overflow:'hidden', textOverflow:'ellipsis' }}>Youssef Alami</div>
           <div style={{ fontSize:11, color:'rgba(244,239,228,.45)', marginTop:1 }}><span className="live" style={{ marginRight:5 }}/>Plan Gratuit</div>
@@ -360,12 +366,12 @@ const Topbar = ({ crumb }) => (
 const Eyebrow = ({children}) => <div style={{ fontSize:11, fontWeight:800, letterSpacing:2.5, textTransform:'uppercase', color:'var(--terra)', marginBottom:7 }}>{children}</div>;
 
 const TX = [
-  { id:1, v:'Maroc Telecom',       cat:'Téléphonie',     date:'10 juin', amt:-1299,  ico:'📡', clr:'#57399E' },
-  { id:2, v:'Total Maroc',         cat:'Carburant',      date:'08 juin', amt:-450,   ico:'⛽', clr:'#C75B39' },
-  { id:3, v:'Loyer bureau',        cat:'Immobilier',     date:'05 juin', amt:-8500,  ico:'🏛️', clr:'#E8A317' },
-  { id:4, v:'Client ACME SARL',    cat:'Virement reçu',  date:'03 juin', amt:15000,  ico:'💼', clr:'#1F6F6B' },
-  { id:5, v:'Amazon Web Services', cat:'Cloud & Tech',   date:'01 juin', amt:-320,   ico:'☁️', clr:'#6B7A3A' },
-  { id:6, v:'Carrefour Market',    cat:'Fournitures',    date:'28 mai',  amt:-892.5, ico:'🛒', clr:'#2E1A47' },
+  { id:1, v:'Maroc Telecom',       cat:'Téléphonie',     date:'10 juin', amt:-1299,  ico:'📡', clr:'#5b33e8' },
+  { id:2, v:'Total Maroc',         cat:'Carburant',      date:'08 juin', amt:-450,   ico:'⛽', clr:'#7857f0' },
+  { id:3, v:'Loyer bureau',        cat:'Immobilier',     date:'05 juin', amt:-8500,  ico:'🏛️', clr:'#5b33e8' },
+  { id:4, v:'Client ACME SARL',    cat:'Virement reçu',  date:'03 juin', amt:15000,  ico:'💼', clr:'#16a06a' },
+  { id:5, v:'Amazon Web Services', cat:'Cloud & Tech',   date:'01 juin', amt:-320,   ico:'☁️', clr:'#16a06a' },
+  { id:6, v:'Carrefour Market',    cat:'Fournitures',    date:'28 mai',  amt:-892.5, ico:'🛒', clr:'#2b1763' },
 ];
 
 const Kpi = ({ label, value, unit, pct, sub, accent, ico }) => (
@@ -429,12 +435,12 @@ const CashflowChart = () => {
           onMouseLeave={()=>setHover(null)}>
           <defs>
             <linearGradient id="gRev" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#1F6F6B" stopOpacity="0.22"/>
-              <stop offset="100%" stopColor="#1F6F6B" stopOpacity="0"/>
+              <stop offset="0%" stopColor="#16a06a" stopOpacity="0.22"/>
+              <stop offset="100%" stopColor="#16a06a" stopOpacity="0"/>
             </linearGradient>
             <linearGradient id="gDep" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#C75B39" stopOpacity="0.16"/>
-              <stop offset="100%" stopColor="#C75B39" stopOpacity="0"/>
+              <stop offset="0%" stopColor="#7857f0" stopOpacity="0.16"/>
+              <stop offset="100%" stopColor="#7857f0" stopOpacity="0"/>
             </linearGradient>
           </defs>
           {grid.map((g,i)=>(
@@ -461,7 +467,7 @@ const CashflowChart = () => {
           <div style={{ position:'absolute', top:0, left:`${(x(hover)/W)*100}%`, transform:`translateX(${hover>FLOW.length-2?'-100%':hover<1?'0':'-50%'})`, pointerEvents:'none',
             background:'var(--plum)', color:'#F4EFE4', borderRadius:12, padding:'10px 13px', boxShadow:'0 14px 30px -10px rgba(46,26,71,.5)', minWidth:140 }}>
             <div style={{ fontSize:11, fontWeight:700, color:'rgba(244,239,228,.6)', marginBottom:7, letterSpacing:.5 }}>{FLOW[hover].m} 2026</div>
-            {[['Revenus','rev','var(--saffron)'],['Dépenses','dep','#E89478']].map(([l,k,c])=>(
+            {[['Revenus','rev','var(--teal)'],['Dépenses','dep','var(--terra)']].map(([l,k,c])=>(
               <div key={k} style={{ display:'flex', alignItems:'center', justifyContent:'space-between', gap:14, marginTop:3 }}>
                 <span style={{ display:'flex', alignItems:'center', gap:6, fontSize:12 }}><span style={{ width:7, height:7, borderRadius:'50%', background:c }}/>{l}</span>
                 <span className="mono" style={{ fontSize:12, fontWeight:600 }}>{fmtMAD(FLOW[hover][k])}</span>
@@ -487,10 +493,10 @@ const Dashboard = ({toast}) => (
 
     {/* KPI row */}
     <div className="stagger" style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:16, marginBottom:18 }}>
-      <Kpi label="Dépenses du mois"    value={fmtMAD(12450)} unit="MAD" pct={-8.2} sub="vs mai" accent="#C75B39" ico={I.down(16)}/>
+      <Kpi label="Dépenses du mois"    value={fmtMAD(12450)} unit="MAD" pct={-8.2} sub="vs mai" accent="#7857f0" ico={I.down(16)}/>
       <Kpi label="Revenus du mois"     value={fmtMAD(65200)} unit="MAD" pct={12.5} sub="vs mai" accent="#2F7D55" ico={I.up(16)}/>
-      <Kpi label="Transactions"        value="47" pct={5.3} sub="vs mai" accent="#57399E" ico={I.transfer(16)}/>
-      <Kpi label="Factures en attente" value="3"  pct={0}   sub="stable" accent="#E8A317" ico={I.file(16)}/>
+      <Kpi label="Transactions"        value="47" pct={5.3} sub="vs mai" accent="#5b33e8" ico={I.transfer(16)}/>
+      <Kpi label="Factures en attente" value="3"  pct={0}   sub="stable" accent="#5b33e8" ico={I.file(16)}/>
     </div>
 
     {/* Chart + Card */}
@@ -535,9 +541,9 @@ const Virements = ({toast}) => {
   const [busy,setBusy] = useState(false);
   const set = (k,v)=>setF(p=>({...p,[k]:v}));
   const recent = [
-    { name:'Agence Digitale Maroc',   iban:'MA64 0123 4567 8901 2345 6789', ini:'AD', clr:'#57399E' },
-    { name:'Startup Casablanca SARL', iban:'MA64 9876 5432 1098 7654 3210', ini:'SC', clr:'#1F6F6B' },
-    { name:'Atlas Consulting',        iban:'MA64 1111 2222 3333 4444 5555', ini:'AC', clr:'#C75B39' },
+    { name:'Agence Digitale Maroc',   iban:'MA64 0123 4567 8901 2345 6789', ini:'AD', clr:'#5b33e8' },
+    { name:'Startup Casablanca SARL', iban:'MA64 9876 5432 1098 7654 3210', ini:'SC', clr:'#16a06a' },
+    { name:'Atlas Consulting',        iban:'MA64 1111 2222 3333 4444 5555', ini:'AC', clr:'#7857f0' },
   ];
   const submit = () => {
     if(!f.bene||!f.iban||!f.montant){ toast('Veuillez remplir les champs obligatoires','error'); return; }
@@ -707,9 +713,9 @@ const Facturation = ({toast}) => {
 
       <div className="stagger" style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16, marginBottom:24 }}>
         {[
-          { l:'Factures émises', v:'3', u:'', s:'ce mois-ci', a:'#57399E' },
+          { l:'Factures émises', v:'3', u:'', s:'ce mois-ci', a:'#5b33e8' },
           { l:'Encaissé', v:fmtMAD(15000), u:'MAD', s:'1 facture payée', a:'#2F7D55' },
-          { l:'En attente', v:fmtMAD(40500), u:'MAD', s:'2 factures dues', a:'#E8A317' },
+          { l:'En attente', v:fmtMAD(40500), u:'MAD', s:'2 factures dues', a:'#5b33e8' },
         ].map(s=>(
           <div key={s.l} className="panel" style={{ padding:'20px 24px', position:'relative', overflow:'hidden' }}>
             <div style={{ position:'absolute', top:0, left:0, width:4, height:'100%', background:s.a }}/>
@@ -746,9 +752,9 @@ const Facturation = ({toast}) => {
 
 /* ━━━━━━━━━━ SCANNER ━━━━━━━━━━ */
 const SCANNED = [
-  { name:'Reçu — Total Maroc', date:"Aujourd'hui · 09:14", amt:450, cat:'Carburant', ico:'⛽', clr:'#C75B39' },
-  { name:'Facture — AWS', date:'Hier · 18:42', amt:320, cat:'Cloud & Tech', ico:'☁️', clr:'#6B7A3A' },
-  { name:'Reçu — Carrefour', date:'09 juin · 14:20', amt:892.5, cat:'Fournitures', ico:'🛒', clr:'#2E1A47' },
+  { name:'Reçu — Total Maroc', date:"Aujourd'hui · 09:14", amt:450, cat:'Carburant', ico:'⛽', clr:'#7857f0' },
+  { name:'Facture — AWS', date:'Hier · 18:42', amt:320, cat:'Cloud & Tech', ico:'☁️', clr:'#16a06a' },
+  { name:'Reçu — Carrefour', date:'09 juin · 14:20', amt:892.5, cat:'Fournitures', ico:'🛒', clr:'#2b1763' },
 ];
 
 const Scanner = ({toast}) => {
@@ -780,7 +786,7 @@ const Scanner = ({toast}) => {
               <>
                 <div style={{ width:64, height:64, borderRadius:18, background:'var(--plum)', display:'flex', alignItems:'center', justifyContent:'center', color:'#F4EFE4', marginBottom:18, position:'relative' }}>
                   {I.scan(28)}
-                  <div style={{ position:'absolute', left:8, right:8, height:2, background:'var(--saffron)', borderRadius:2, boxShadow:'0 0 10px 2px rgba(232,163,23,.6)', animation:'scanline 1.4s ease-in-out infinite' }}/>
+                  <div style={{ position:'absolute', left:8, right:8, height:2, background:'var(--saffron)', borderRadius:2, boxShadow:'0 0 10px 2px rgba(91,51,232,.6)', animation:'scanline 1.4s ease-in-out infinite' }}/>
                 </div>
                 <div className="serif" style={{ fontSize:18, fontWeight:600, color:'var(--ink)' }}>Analyse en cours…</div>
                 <div style={{ fontSize:13, color:'var(--muted)', marginTop:5, display:'flex', alignItems:'center', gap:6 }}><span style={{ color:'var(--saffron)' }}>{I.spark(13)}</span> Lecture du document par l'IA</div>
@@ -878,10 +884,10 @@ const PLANS = [
 const SadadPro = ({toast}) => (
   <div className="rise" style={{ padding:'30px 36px 40px' }}>
     <div className="zellige grain" style={{ position:'relative', overflow:'hidden', borderRadius:22, padding:'42px 44px', marginBottom:30,
-      background:'radial-gradient(120% 130% at 85% 0%, rgba(232,163,23,.25), transparent 50%), linear-gradient(150deg,#241338,#2E1A47 55%,#3F2766)', color:'#F4EFE4' }}>
+      background:'radial-gradient(120% 130% at 85% 0%, rgba(91,51,232,.25), transparent 50%), linear-gradient(150deg,#1e0f49,#2b1763 55%,#3a2185)', color:'#F4EFE4' }}>
       <div className="card-ring" style={{ width:300, height:300, top:-140, right:-60 }}/>
       <div style={{ position:'relative', zIndex:1 }}>
-        <div style={{ display:'inline-flex', alignItems:'center', gap:7, padding:'5px 14px', background:'rgba(232,163,23,.18)', borderRadius:20, marginBottom:16 }}>
+        <div style={{ display:'inline-flex', alignItems:'center', gap:7, padding:'5px 14px', background:'rgba(91,51,232,.18)', borderRadius:20, marginBottom:16 }}>
           <span style={{ fontSize:11, fontWeight:800, letterSpacing:1.5, color:'var(--saffron)' }}>✦ NIVEAU SUPÉRIEUR</span>
         </div>
         <h1 className="serif" style={{ fontSize:34, fontWeight:600, letterSpacing:'-1px', lineHeight:1.1, maxWidth:560 }}>Développez votre business sans limites.</h1>
@@ -892,14 +898,14 @@ const SadadPro = ({toast}) => (
     <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20, marginBottom:26, alignItems:'start' }}>
       {PLANS.map(p=>{
         const dark = p.theme==='dark', saff = p.theme==='saffron';
-        const bg = dark ? 'linear-gradient(155deg,#241338,#3F2766)' : saff ? 'var(--ink)' : 'var(--paper)';
+        const bg = dark ? 'linear-gradient(155deg,#1e0f49,#3a2185)' : saff ? 'var(--ink)' : 'var(--paper)';
         const txt = (dark||saff) ? '#F4EFE4' : 'var(--ink)';
         const mut = (dark||saff) ? 'rgba(244,239,228,.5)' : 'var(--muted)';
         return (
           <div key={p.name} className={dark?'zellige grain':''} style={{ position:'relative', overflow:'hidden', borderRadius:20, padding:'30px 28px', background:bg,
-            border: dark?'1.5px solid rgba(232,163,23,.35)':'1px solid var(--line)',
+            border: dark?'1.5px solid rgba(91,51,232,.35)':'1px solid var(--line)',
             transform: dark?'scale(1.03)':'none', boxShadow: dark?'0 26px 60px -20px rgba(46,26,71,.5)':'0 2px 14px -8px rgba(46,26,71,.12)' }}>
-            {p.badge && <div style={{ position:'absolute', top:0, right:0, background:'var(--saffron)', color:'#2A1505', padding:'5px 16px', borderBottomLeftRadius:14, fontSize:11.5, fontWeight:800, letterSpacing:.3 }}>{p.badge}</div>}
+            {p.badge && <div style={{ position:'absolute', top:0, right:0, background:'var(--saffron)', color:'#ffffff', padding:'5px 16px', borderBottomLeftRadius:14, fontSize:11.5, fontWeight:800, letterSpacing:.3 }}>{p.badge}</div>}
             <div style={{ fontSize:12, fontWeight:800, letterSpacing:2, textTransform:'uppercase', color:mut, marginBottom:14, position:'relative', zIndex:1 }}>{p.name}</div>
             <div style={{ marginBottom:24, position:'relative', zIndex:1, display:'flex', alignItems:'baseline', gap:5 }}>
               <span className="serif" style={{ fontSize:42, fontWeight:600, letterSpacing:'-1.5px', color:txt }}>{p.price}</span>
