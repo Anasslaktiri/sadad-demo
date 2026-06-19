@@ -119,9 +119,9 @@
     .bank-card {
       border-radius: 22px; position: relative; overflow: hidden; color: #F4EFE4;
       background:
-        radial-gradient(120% 120% at 85% 10%, rgba(91,51,232,0.22), transparent 45%),
-        linear-gradient(150deg, #1e0f49 0%, #2b1763 45%, #3a2185 100%);
-      box-shadow: 0 30px 60px -20px rgba(46,26,71,0.55), inset 0 1px 0 rgba(255,255,255,0.08);
+        radial-gradient(120% 120% at 85% 8%, rgba(91,51,232,0.30), transparent 48%),
+        linear-gradient(150deg, #050507 0%, #141318 48%, #221f2b 100%);
+      box-shadow: 0 30px 60px -20px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.10);
     }
     .card-ring {
       position: absolute; border-radius: 50%; border: 1px solid rgba(255,255,255,0.06);
@@ -252,8 +252,8 @@ const BankCard = ({ width=400 }) => {
       <div style={{ position:'relative', zIndex:2, height:'100%', padding: big?'24px 28px':'18px 20px', display:'flex', flexDirection:'column', justifyContent:'space-between' }}>
         <div style={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
           <div>
-            <div className="serif" style={{ fontWeight:900, fontSize: big?27:21, letterSpacing:'-.5px', lineHeight:1 }}>SADAD</div>
-            <div style={{ fontSize:8.5, letterSpacing:3, textTransform:'uppercase', color:'rgba(244,239,228,.5)', marginTop:5 }}>Carte Professionnelle</div>
+            <div style={{ width: big?116:92, height: big?30:24, backgroundImage:'url("sadad%20logo.webp")', backgroundRepeat:'no-repeat', backgroundSize: big?'207px auto':'164px auto', backgroundPosition: big?'-67px -43px':'-53px -34px', filter:'brightness(0) invert(1)' }} role="img" aria-label="Sadad"/>
+            <div style={{ fontSize:8.5, letterSpacing:3, textTransform:'uppercase', color:'rgba(244,239,228,.5)', marginTop:7 }}>Carte Professionnelle</div>
           </div>
           <div className="emv"/>
         </div>
